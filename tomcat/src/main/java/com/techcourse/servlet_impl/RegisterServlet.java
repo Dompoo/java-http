@@ -28,13 +28,13 @@ public class RegisterServlet implements Servlet {
         String email = form.get("email");
         String password = form.get("password");
         if (account == null || email == null | password == null) {
-            return HttpResponse.redirect("/401.html");
+            return HttpResponse.redirect("/401.html").build();
         }
 
         User user = new User(account, password, email);
         InMemoryUserRepository.save(user);
         log.info("회원가입 성공, user={}", user);
 
-        return HttpResponse.redirect("/index.html");
+        return HttpResponse.redirect("/index.html").build();
     }
 }

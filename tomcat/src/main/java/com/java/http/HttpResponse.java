@@ -17,20 +17,20 @@ public record HttpResponse(
         return new HttpResponseBuilder(200);
     }
 
-    public static HttpResponse redirect(String location) {
-        return new HttpResponseBuilder(302).location(location).build();
+    public static HttpResponseBuilder redirect(String location) {
+        return new HttpResponseBuilder(302).location(location);
     }
 
-    public static HttpResponse notFound(String message) {
-        return new HttpResponseBuilder(404).plain(message).build();
+    public static HttpResponseBuilder notFound(String message) {
+        return new HttpResponseBuilder(404).plain(message);
     }
 
-    public static HttpResponse internalServerError(Exception exception) {
+    public static HttpResponseBuilder internalServerError(Exception exception) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
         exception.printStackTrace(printWriter);
         String stackTrace = stringWriter.toString();
-        return new HttpResponseBuilder(500).plain(stackTrace).build();
+        return new HttpResponseBuilder(500).plain(stackTrace);
     }
 
     public static class HttpResponseBuilder {

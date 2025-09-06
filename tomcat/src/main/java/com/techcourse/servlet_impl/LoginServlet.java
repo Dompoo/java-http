@@ -28,7 +28,7 @@ public class LoginServlet implements Servlet {
         String account = form.get("account");
         String password = form.get("password");
         if (account == null || password == null) {
-            return HttpResponse.redirect("/401.html");
+            return HttpResponse.redirect("/401.html").build();
 //            throw new IllegalArgumentException("계정과 비밀번호는 필수입니다.");
             // TODO : 서블릿에서는 예외 상황에 예외를 던져야 하는 것 아닐까?
         }
@@ -36,11 +36,11 @@ public class LoginServlet implements Servlet {
         Optional<User> user = InMemoryUserRepository.findByAccount(account);
         // .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 계정입니다."));
         if (user.isEmpty() || !user.get().checkPassword(password)) {
-            return HttpResponse.redirect("/401.html");
+            return HttpResponse.redirect("/401.html").build();
 //            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
         log.info("로그인 성공, user={}", user.get());
-        return HttpResponse.redirect("/index.html");
+        return HttpResponse.redirect("/index.html").build();
     }
 }
