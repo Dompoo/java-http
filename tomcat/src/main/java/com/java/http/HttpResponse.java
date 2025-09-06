@@ -6,14 +6,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 public record HttpResponse(
         String version,
         StatusCode statusCode,
-        Map<String, String> headers,
+        Headers headers,
         byte[] responseBody
 ) {
     public static HttpResponseBuilder ok() {
@@ -40,7 +37,7 @@ public record HttpResponse(
 
         private final String version = "HTTP/1.1";
         private final StatusCode statusCode;
-        private final Map<String, String> headers = new HashMap<>();
+        private final Headers headers = new Headers();
 
         private byte[] responseBody;
 
@@ -49,54 +46,54 @@ public record HttpResponse(
         }
 
         public HttpResponseBuilder plain(String data) {
-            this.headers.put("Content-Type", "text/plain;charset=utf-8");
-            this.headers.put("Content-Length", String.valueOf(data.getBytes(StandardCharsets.UTF_8).length));
+            this.headers.contentType("text/plain;charset=utf-8");
+            this.headers.contentLength(data.getBytes(StandardCharsets.UTF_8).length);
             this.responseBody = data.getBytes(StandardCharsets.UTF_8);
             return this;
         }
 
         public HttpResponseBuilder html(String data) {
-            this.headers.put("Content-Type", "text/html;charset=utf-8");
-            this.headers.put("Content-Length", String.valueOf(data.getBytes(StandardCharsets.UTF_8).length));
+            this.headers.contentType("text/html;charset=utf-8");
+            this.headers.contentLength(data.getBytes(StandardCharsets.UTF_8).length);
             this.responseBody = data.getBytes(StandardCharsets.UTF_8);
             return this;
         }
 
         public HttpResponseBuilder html(byte[] data) {
-            this.headers.put("Content-Type", "text/html;charset=utf-8");
-            this.headers.put("Content-Length", String.valueOf(data.length));
+            this.headers.contentType("text/html;charset=utf-8");
+            this.headers.contentLength(data.length);
             this.responseBody = data;
             return this;
         }
 
         public HttpResponseBuilder css(byte[] data) {
-            this.headers.put("Content-Type", "text/css;charset=utf-8");
-            this.headers.put("Content-Length", String.valueOf(data.length));
+            this.headers.contentType("text/css;charset=utf-8");
+            this.headers.contentLength(data.length);
             this.responseBody = data;
             return this;
         }
 
         public HttpResponseBuilder js(byte[] data) {
-            this.headers.put("Content-Type", "application/javascript;charset=utf-8");
-            this.headers.put("Content-Length", String.valueOf(data.length));
+            this.headers.contentType("application/javascript;charset=utf-8");
+            this.headers.contentLength(data.length);
             this.responseBody = data;
             return this;
         }
 
         public HttpResponseBuilder icon(byte[] data) {
-            this.headers.put("Content-Type", "image/x-icon");
-            this.headers.put("Content-Length", String.valueOf(data.length));
+            this.headers.contentType("image/x-icon");
+            this.headers.contentLength(data.length);
             this.responseBody = data;
             return this;
         }
 
         public HttpResponseBuilder location(String location) {
-            this.headers.put("Location", location);
+            this.headers.location(location);
             return this;
         }
 
         public HttpResponse build() {
-            return new HttpResponse(version, statusCode, Collections.unmodifiableMap(headers), responseBody);
+            return new HttpResponse(version, statusCode, headers, responseBody);
         }
     }
 
@@ -129,7 +126,7 @@ public record HttpResponse(
         StringBuilder sb = new StringBuilder();
 
         sb.append("%s %s %s".formatted(version, statusCode.codeNumber, statusCode.codeName)).append(CRLF);
-        headers.forEach((key, value) -> sb.append("%s: %s".formatted(key, value)).append(CRLF));
+        sb.append(headers.toSimpleString());
         sb.append(CRLF);
 
         if (responseBody == null) {
