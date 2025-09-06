@@ -35,14 +35,15 @@ public class SimpleContainer implements Container {
     @Override
     public HttpResponse service(HttpRequest request) {
         Optional<Servlet> servlet = findServletFor(request);
-        if (servlet.isPresent()) {
-            try {
-                return servlet.get().handle(request);
-            } catch (Exception e) {
-                return HttpResponse.internalServerError(e);
-            }
-        } else {
+
+        if (servlet.isEmpty()) {
             return HttpResponse.notFound("해당 요청을 처리할 서블릿을 찾지 못했습니다. uri=" + request.uri());
+        }
+
+        try {
+            return servlet.get().handle(request);
+        } catch (Exception e) {
+            return HttpResponse.internalServerError(e);
         }
     }
 
