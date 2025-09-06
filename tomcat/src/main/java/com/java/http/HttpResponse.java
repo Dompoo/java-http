@@ -20,6 +20,10 @@ public record HttpResponse(
         return new HttpResponseBuilder(200);
     }
 
+    public static HttpResponse redirect(String location) {
+        return new HttpResponseBuilder(302).location(location).build();
+    }
+
     public static HttpResponse notFound(String message) {
         return new HttpResponseBuilder(404).plain(message).build();
     }
@@ -86,6 +90,11 @@ public record HttpResponse(
             return this;
         }
 
+        public HttpResponseBuilder location(String location) {
+            this.headers.put("Location", location);
+            return this;
+        }
+
         public HttpResponse build() {
             return new HttpResponse(version, statusCode, Collections.unmodifiableMap(headers), responseBody);
         }
@@ -93,6 +102,7 @@ public record HttpResponse(
 
     private enum StatusCode {
         OK("OK", 200),
+        REDIRECT("Found", 302),
         NOT_FOUND("Not Found", 404),
         INTERNAL_SERVER_ERROR("Internal Server Error", 500),
         ;
@@ -121,6 +131,10 @@ public record HttpResponse(
         sb.append("%s %s %s".formatted(version, statusCode.codeNumber, statusCode.codeName)).append(CRLF);
         headers.forEach((key, value) -> sb.append("%s: %s".formatted(key, value)).append(CRLF));
         sb.append(CRLF);
+
+        if (responseBody == null) {
+            return sb.toString().getBytes(StandardCharsets.UTF_8);
+        }
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             baos.write(sb.toString().getBytes(StandardCharsets.UTF_8));
