@@ -8,9 +8,10 @@ import com.techcourse.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.Optional;
 
-import static com.java.http.HttpRequest.HttpMethod.GET;
+import static com.java.http.HttpRequest.HttpMethod.POST;
 
 public class LoginServlet implements Servlet {
 
@@ -18,13 +19,14 @@ public class LoginServlet implements Servlet {
 
     @Override
     public boolean canHandle(HttpRequest request) {
-        return request.method() == GET && request.uri().equals("/login");
+        return request.method() == POST && request.uri().equals("/login");
     }
 
     @Override
     public HttpResponse handle(HttpRequest request) {
-        String account = request.param("account");
-        String password = request.param("password");
+        Map<String, String> form = request.body().asFormUrlEncoded();
+        String account = form.get("account");
+        String password = form.get("password");
         if (account == null || password == null) {
             return HttpResponse.redirect("/401.html");
 //            throw new IllegalArgumentException("계정과 비밀번호는 필수입니다.");
