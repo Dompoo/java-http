@@ -8,6 +8,8 @@ import com.techcourse.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+
 import static com.java.http.HttpRequest.HttpMethod.GET;
 
 public class LoginServlet implements Servlet {
@@ -24,15 +26,19 @@ public class LoginServlet implements Servlet {
         String account = request.param("account");
         String password = request.param("password");
         if (account == null || password == null) {
-            throw new IllegalArgumentException("계정과 비밀번호는 필수입니다.");
+            return HttpResponse.redirect("/401.html");
+//            throw new IllegalArgumentException("계정과 비밀번호는 필수입니다.");
+            // TODO : 서블릿에서는 예외 상황에 예외를 던져야 하는 것 아닐까?
         }
 
-        User user = InMemoryUserRepository.findByAccount(account).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 계정입니다."));
-        if (!user.checkPassword(password)) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        Optional<User> user = InMemoryUserRepository.findByAccount(account);
+        // .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 계정입니다."));
+        if (user.isEmpty() || !user.get().checkPassword(password)) {
+            return HttpResponse.redirect("/401.html");
+//            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        log.info("로그인 성공, user={}", user);
+        log.info("로그인 성공, user={}", user.get());
         return HttpResponse.redirect("/index.html");
     }
 }
