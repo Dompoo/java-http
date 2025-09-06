@@ -1,8 +1,6 @@
 package com.java.http;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public record Headers(
@@ -36,8 +34,25 @@ public record Headers(
         values.put("Location", value);
     }
 
+    public void setCookie(String key, String value) {
+        values.put("Set-Cookie", key + "=" + value);
+    }
+
     public String value(String key) {
         return values.get(key);
+    }
+
+    public Map<String, String> cookies() {
+        String data = values.get("Cookie");
+        if (data == null) return Collections.emptyMap();
+        return Arrays.stream(data.split(";"))
+                .map(str -> {
+                    int i = str.indexOf("=");
+                    String cookieKey = str.substring(0, i).trim();
+                    String cookieValue = str.substring(i + 1).trim();
+                    return new String[]{cookieKey, cookieValue};
+                })
+                .collect(Collectors.toMap(str -> str[0], str -> str[1]));
     }
 
     public String toSimpleString() {

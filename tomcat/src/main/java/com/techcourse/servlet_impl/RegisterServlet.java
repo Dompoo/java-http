@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.UUID;
 
 import static com.java.http.HttpRequest.HttpMethod.POST;
 
@@ -35,6 +36,10 @@ public class RegisterServlet implements Servlet {
         InMemoryUserRepository.save(user);
         log.info("회원가입 성공, user={}", user);
 
-        return HttpResponse.redirect("/index.html").build();
+        HttpResponse.HttpResponseBuilder response = HttpResponse.redirect("/index.html");
+        if (request.cookie("JSESSIONID") == null) {
+            response.setCookie("JSESSIONID", UUID.randomUUID().toString());
+        }
+        return response.build();
     }
 }

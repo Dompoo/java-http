@@ -91,6 +91,11 @@ public record HttpResponse(
             return this;
         }
 
+        public HttpResponseBuilder setCookie(String key, String value) {
+            this.headers.setCookie(key, value);
+            return this;
+        }
+
         public HttpResponse build() {
             return new HttpResponse(version, statusCode, headers, responseBody);
         }

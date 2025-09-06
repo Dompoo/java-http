@@ -61,6 +61,10 @@ public record HttpRequest(
         return startLine.uri();
     }
 
+    public String cookie(String key) {
+        return headers.cookies().get(key);
+    }
+
     private record StartLine(
             HttpMethod method,
             String uri,

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.java.http.HttpRequest.HttpMethod.POST;
 
@@ -41,6 +42,10 @@ public class LoginServlet implements Servlet {
         }
 
         log.info("로그인 성공, user={}", user.get());
-        return HttpResponse.redirect("/index.html").build();
+        HttpResponse.HttpResponseBuilder response = HttpResponse.redirect("/index.html");
+        if (request.cookie("JSESSIONID") == null) {
+            response.setCookie("JSESSIONID", UUID.randomUUID().toString()).build();
+        }
+        return response.build();
     }
 }
