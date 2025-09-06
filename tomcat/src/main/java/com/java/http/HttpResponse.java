@@ -38,8 +38,7 @@ public record HttpResponse(
         private final String version = "HTTP/1.1";
         private final StatusCode statusCode;
         private final Headers headers = new Headers();
-
-        private Body responseBody;
+        private Body responseBody = Body.EMPTY;
 
         public HttpResponseBuilder(int statusCode) {
             this.statusCode = StatusCode.parse(statusCode);
