@@ -5,6 +5,7 @@ import com.java.http.HttpResponse;
 import com.java.servlet.Servlet;
 import com.java.servlet.StaticResourceRegistryServlet;
 import com.techcourse.servlet_impl.LoginServlet;
+import com.techcourse.servlet_impl.RegisterServlet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +18,12 @@ public class SimpleContainer implements Container {
 
     static {
         servlets.add(new LoginServlet());
+        servlets.add(new RegisterServlet());
         servlets.add(new StaticResourceRegistryServlet()
                 .register("/", "static/index.html")
                 .register("/index.html", "static/index.html")
                 .register("/login", "static/login.html")
+                .register("/register", "static/register.html")
                 .register("/401.html", "static/401.html")
                 .register("/css/styles.css", "static/css/styles.css")
                 .register("/js/scripts.js", "static/js/scripts.js")
