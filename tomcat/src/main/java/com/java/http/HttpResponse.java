@@ -11,7 +11,7 @@ public record HttpResponse(
         String version,
         StatusCode statusCode,
         Headers headers,
-        byte[] responseBody
+        Body body
 ) {
     public static HttpResponseBuilder ok() {
         return new HttpResponseBuilder(200);
@@ -39,7 +39,7 @@ public record HttpResponse(
         private final StatusCode statusCode;
         private final Headers headers = new Headers();
 
-        private byte[] responseBody;
+        private Body responseBody;
 
         public HttpResponseBuilder(int statusCode) {
             this.statusCode = StatusCode.parse(statusCode);
@@ -48,42 +48,42 @@ public record HttpResponse(
         public HttpResponseBuilder plain(String data) {
             this.headers.contentType("text/plain;charset=utf-8");
             this.headers.contentLength(data.getBytes(StandardCharsets.UTF_8).length);
-            this.responseBody = data.getBytes(StandardCharsets.UTF_8);
+            this.responseBody = new Body(data);
             return this;
         }
 
         public HttpResponseBuilder html(String data) {
             this.headers.contentType("text/html;charset=utf-8");
             this.headers.contentLength(data.getBytes(StandardCharsets.UTF_8).length);
-            this.responseBody = data.getBytes(StandardCharsets.UTF_8);
+            this.responseBody = new Body(data);
             return this;
         }
 
         public HttpResponseBuilder html(byte[] data) {
             this.headers.contentType("text/html;charset=utf-8");
             this.headers.contentLength(data.length);
-            this.responseBody = data;
+            this.responseBody = new Body(data);
             return this;
         }
 
         public HttpResponseBuilder css(byte[] data) {
             this.headers.contentType("text/css;charset=utf-8");
             this.headers.contentLength(data.length);
-            this.responseBody = data;
+            this.responseBody = new Body(data);
             return this;
         }
 
         public HttpResponseBuilder js(byte[] data) {
             this.headers.contentType("application/javascript;charset=utf-8");
             this.headers.contentLength(data.length);
-            this.responseBody = data;
+            this.responseBody = new Body(data);
             return this;
         }
 
         public HttpResponseBuilder icon(byte[] data) {
             this.headers.contentType("image/x-icon");
             this.headers.contentLength(data.length);
-            this.responseBody = data;
+            this.responseBody = new Body(data);
             return this;
         }
 
@@ -120,22 +120,12 @@ public record HttpResponse(
         }
     }
 
-    private static final String CRLF = "\r\n";
-
     public byte[] toByteArray() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("%s %s %s".formatted(version, statusCode.codeNumber, statusCode.codeName)).append(CRLF);
-        sb.append(headers.toSimpleString());
-        sb.append(CRLF);
-
-        if (responseBody == null) {
-            return sb.toString().getBytes(StandardCharsets.UTF_8);
-        }
-
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            baos.write(sb.toString().getBytes(StandardCharsets.UTF_8));
-            baos.write(responseBody);
+            baos.write("%s %s %s\r\n".formatted(version, statusCode.codeNumber, statusCode.codeName).getBytes(StandardCharsets.UTF_8));
+            baos.write(headers.toSimpleString().getBytes(StandardCharsets.UTF_8));
+            baos.write("\r\n".getBytes(StandardCharsets.UTF_8));
+            baos.write(body.value());
             return baos.toByteArray();
         } catch (IOException e) {
             throw new IllegalStateException("HTTP 응답을 구성하는 중에 예외가 발생했습니다.", e);

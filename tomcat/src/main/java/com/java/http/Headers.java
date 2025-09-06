@@ -5,21 +5,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Headers {
-
-    private final Map<String, String> values;
-
+public record Headers(
+        Map<String, String> values
+) {
     public Headers() {
-        this.values = new HashMap<>();
-    }
-
-    public Headers(Map<String, String> values) {
-        this.values = values;
+        this(new HashMap<>());
     }
 
     public static Headers from(List<String> headers) {
         Map<String, String> values = headers.stream()
-                .map(value -> value.split(":"))
+                .map(line -> {
+                    int i = line.indexOf(":");
+                    String key = line.substring(0, i).trim();
+                    String value = line.substring(i + 1).trim();
+                    return new String[]{key, value};
+                })
                 .collect(Collectors.toMap(value -> value[0], value -> value[1]));
         return new Headers(values);
     }

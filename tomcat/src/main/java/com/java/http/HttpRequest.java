@@ -10,20 +10,27 @@ import java.util.stream.Collectors;
 
 public record HttpRequest(
         StartLine startLine,
-        Headers headers
+        Headers headers,
+        Body body
 ) {
     public static HttpRequest from(InputStream inputStream) throws IOException {
-        List<String> strings = readInputStream(inputStream);
-
-        StartLine startLine = StartLine.from(strings.getFirst());
-        Headers headers = Headers.from(strings.subList(1, strings.size() - 1));
-
-        return new HttpRequest(startLine, headers);
-    }
-
-    private static List<String> readInputStream(InputStream inputStream) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
+        List<String> startLineEndHeaders = readUntilNewLine(reader);
+        StartLine startLine = StartLine.from(startLineEndHeaders.getFirst());
+        Headers headers = Headers.from(startLineEndHeaders.subList(1, startLineEndHeaders.size() - 1));
+
+        Body body = Body.EMPTY;
+        String contentLength = headers.value("Content-Length");
+        if (contentLength != null) {
+            String bodyValue = readBy(reader, Integer.parseInt(contentLength));
+            body = new Body(bodyValue);
+        }
+
+        return new HttpRequest(startLine, headers, body);
+    }
+
+    private static List<String> readUntilNewLine(BufferedReader reader) throws IOException {
         List<String> result = new ArrayList<>();
         String line;
         while ((line = reader.readLine()) != null) {
@@ -34,6 +41,12 @@ public record HttpRequest(
         }
 
         return result;
+    }
+
+    private static String readBy(BufferedReader reader, int contentLength) throws IOException {
+        char[] bodyChars = new char[contentLength];
+        int read = reader.read(bodyChars, 0, contentLength);
+        return new String(bodyChars, 0, read);
     }
 
     public String param(String key) {
