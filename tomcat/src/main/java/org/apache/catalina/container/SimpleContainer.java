@@ -20,14 +20,15 @@ public class SimpleContainer implements Container {
         servlets.add(new LoginServlet());
         servlets.add(new HelloWorldServlet());
         servlets.add(new StaticResourceRegistryServlet()
+                .register("/index.html", "static/index.html")
+                .register("/login.html", "static/login.html")
+                .register("/401.html", "static/401.html")
+                .register("/css/styles.css", "static/css/styles.css")
+                .register("/js/scripts.js", "static/js/scripts.js")
                 .register("/assets/chart-area.js", "static/assets/chart-area.js")
                 .register("/assets/chart-bar.js", "static/assets/chart-bar.js")
                 .register("/assets/chart-pie.js", "static/assets/chart-pie.js")
-                .register("/css/styles.css", "static/css/styles.css")
                 .register("/favicon.ico", "static/favicon.ico")
-                .register("/index.html", "static/index.html")
-                .register("/login.html", "static/login.html")
-                .register("/js/scripts.js", "static/js/scripts.js")
         );
     }
 
