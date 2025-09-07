@@ -1,7 +1,9 @@
 package org.apache.catalina.connector;
 
+import com.java.http.SessionManager;
 import org.apache.catalina.container.Container;
 import org.apache.catalina.container.SimpleContainer;
+import org.apache.catalina.session.InMemorySessionStore;
 import org.apache.coyote.http11.Http11Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,7 @@ public class Connector implements Runnable {
     public Connector(final int port, final int acceptCount) {
         this.serverSocket = createServerSocket(port, acceptCount);
         this.stopped = false;
+        SessionManager.setSessionStore(new InMemorySessionStore());
     }
 
     private ServerSocket createServerSocket(final int port, final int acceptCount) {

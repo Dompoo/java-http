@@ -1,10 +1,12 @@
 package com.java.http;
 
-import org.apache.catalina.session.InMemorySessionStore;
-
 public class SessionManager {
 
-    private static final SessionStore sessionStore = new InMemorySessionStore();
+    private static SessionStore sessionStore;
+
+    public static void setSessionStore(SessionStore sessionStore) {
+        SessionManager.sessionStore = sessionStore;
+    }
 
     public static SessionStore getSessionStore() {
         return sessionStore;
