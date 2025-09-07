@@ -9,34 +9,29 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public record HttpRequest(
-        HttpMethod method,
-        String uri,
-        Map<String, String> queryParameter
+        StartLine startLine,
+        Headers headers,
+        Body body
 ) {
+
     public static HttpRequest from(InputStream inputStream) throws IOException {
-        List<String> strings = readInputStream(inputStream);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
-        String[] requestLine = strings.getFirst().split(" ");
+        List<String> startLineEndHeaders = readUntilNewLine(reader);
+        StartLine startLine = StartLine.from(startLineEndHeaders.getFirst());
+        Headers headers = Headers.from(startLineEndHeaders.subList(1, startLineEndHeaders.size() - 1));
 
-        if (!requestLine[1].contains("?")) {
-            String method = requestLine[0];
-            String uri = requestLine[1];
-            return new HttpRequest(HttpMethod.parse(method), uri, Collections.emptyMap());
-        } else {
-            String method = requestLine[0];
-            String[] uriAndParams = requestLine[1].split("\\?");
-            String uri = uriAndParams[0];
-            String params = uriAndParams[1];
-
-            Map<String, String> paramMap = Arrays.stream(params.split("&"))
-                    .map(param -> param.split("="))
-                    .collect(Collectors.toMap(param -> param[0], param -> param[1]));
-            return new HttpRequest(HttpMethod.parse(method), uri, Collections.unmodifiableMap(paramMap));
+        Body body = Body.EMPTY;
+        String contentLength = headers.valueOf("Content-Length");
+        if (contentLength != null) {
+            String bodyValue = readBy(reader, Integer.parseInt(contentLength));
+            body = Body.plaintext(bodyValue);
         }
+
+        return new HttpRequest(startLine, headers, body);
     }
 
-    private static List<String> readInputStream(InputStream inputStream) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+    private static List<String> readUntilNewLine(BufferedReader reader) throws IOException {
 
         List<String> result = new ArrayList<>();
         String line;
@@ -50,8 +45,61 @@ public record HttpRequest(
         return result;
     }
 
+    private static String readBy(BufferedReader reader, int contentLength) throws IOException {
+        char[] bodyChars = new char[contentLength];
+        int read = reader.read(bodyChars, 0, contentLength);
+        return new String(bodyChars, 0, read);
+    }
+
+    public HttpMethod method() {
+        return startLine.method();
+    }
+
+    public String uri() {
+        return startLine.uri();
+    }
+
     public String param(String key) {
-        return queryParameter.get(key);
+        return startLine.queryParameter().get(key);
+    }
+
+    public String cookie(String key) {
+        return headers.cookies().get(key);
+    }
+
+    public Session session(boolean create) {
+        SessionStore sessionStore = SessionManager.getSessionStore();
+        if (create) {
+            return sessionStore.create();
+        }
+        String sessionId = cookie("JSESSIONID");
+        return sessionStore.get(sessionId);
+    }
+
+    private record StartLine(
+            HttpMethod method,
+            String uri,
+            Map<String, String> queryParameter
+    ) {
+        public static StartLine from(String startLine) {
+            String[] requestLine = startLine.split(" ");
+
+            if (!requestLine[1].contains("?")) {
+                String method = requestLine[0];
+                String uri = requestLine[1];
+                return new StartLine(HttpMethod.parse(method), uri, Collections.emptyMap());
+            } else {
+                String method = requestLine[0];
+                String[] uriAndParams = requestLine[1].split("\\?");
+                String uri = uriAndParams[0];
+                String params = uriAndParams[1];
+
+                Map<String, String> paramMap = Arrays.stream(params.split("&"))
+                        .map(param -> param.split("="))
+                        .collect(Collectors.toMap(param -> param[0], param -> param[1]));
+                return new StartLine(HttpMethod.parse(method), uri, Collections.unmodifiableMap(paramMap));
+            }
+        }
     }
 
     public enum HttpMethod {
