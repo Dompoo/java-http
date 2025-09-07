@@ -75,6 +75,12 @@ public record HttpRequest(
         return sessionStore.get(sessionId);
     }
 
+    public void changeSessionId() {
+        SessionStore sessionStore = SessionManager.getSessionStore();
+        Session session = session(false);
+        sessionStore.changeSessionId(session);
+    }
+
     private record StartLine(
             HttpMethod method,
             String uri,

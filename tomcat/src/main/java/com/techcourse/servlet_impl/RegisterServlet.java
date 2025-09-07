@@ -38,7 +38,7 @@ public class RegisterServlet implements Servlet {
         log.info("회원가입 성공, user={}", user);
 
         Session session = request.session(false);
-        if (session != null) session.changeSessionId();
+        if (session != null) request.changeSessionId();
         else session = request.session(true);
         session.setAttribute("user", user);
         return HttpResponse.redirect("/index.html")

@@ -21,4 +21,11 @@ public class InMemorySessionStore implements SessionStore {
     public Session get(String sessionId) {
         return sessions.get(sessionId);
     }
+
+    @Override
+    public void changeSessionId(Session session) {
+        sessions.remove(session.id());
+        session.changeSessionId();
+        sessions.put(session.id(), session);
+    }
 }

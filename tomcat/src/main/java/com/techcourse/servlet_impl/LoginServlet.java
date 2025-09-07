@@ -40,7 +40,7 @@ public class LoginServlet implements Servlet {
         log.info("로그인 성공, user={}", user.get());
 
         Session session = request.session(false);
-        if (session != null) session.changeSessionId();
+        if (session != null) request.changeSessionId();
         else session = request.session(true);
         session.setAttribute("user", user.get());
         return HttpResponse.redirect("/index.html")
