@@ -4,6 +4,7 @@ import com.java.http.HttpRequest;
 import com.java.http.HttpResponse;
 import com.java.servlet.Servlet;
 import com.java.servlet.StaticResourceRegistryServlet;
+import com.techcourse.servlet_impl.LoginPageServlet;
 import com.techcourse.servlet_impl.LoginServlet;
 import com.techcourse.servlet_impl.RegisterServlet;
 
@@ -18,11 +19,11 @@ public class SimpleContainer implements Container {
 
     static {
         servlets.add(new LoginServlet());
+        servlets.add(new LoginPageServlet());
         servlets.add(new RegisterServlet());
         servlets.add(new StaticResourceRegistryServlet()
                 .register("/", "static/index.html")
                 .register("/index.html", "static/index.html")
-                .register("/login", "static/login.html")
                 .register("/register", "static/register.html")
                 .register("/401.html", "static/401.html")
                 .register("/css/styles.css", "static/css/styles.css")
@@ -39,13 +40,13 @@ public class SimpleContainer implements Container {
         Optional<Servlet> servlet = findServletFor(request);
 
         if (servlet.isEmpty()) {
-            return HttpResponse.notFound("해당 요청을 처리할 서블릿을 찾지 못했습니다. uri=" + request.uri()).build();
+            return HttpResponse.notFound("해당 요청을 처리할 서블릿을 찾지 못했습니다. uri=" + request.uri());
         }
 
         try {
             return servlet.get().handle(request);
         } catch (Exception e) {
-            return HttpResponse.internalServerError(e).build();
+            return HttpResponse.internalServerError(e);
         }
     }
 

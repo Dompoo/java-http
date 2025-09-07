@@ -1,9 +1,9 @@
 package com.java.servlet;
 
+import com.java.http.Body;
 import com.java.http.HttpRequest;
 import com.java.http.HttpResponse;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,21 +26,6 @@ public class StaticResourceRegistryServlet implements Servlet {
     @Override
     public HttpResponse handle(HttpRequest request) {
         String resourcePath = uri_resourcePath.get(request.uri());
-        if (resourcePath.endsWith(".html")) return HttpResponse.ok().html(file(resourcePath)).build();
-        if (resourcePath.endsWith(".css")) return HttpResponse.ok().css(file(resourcePath)).build();
-        if (resourcePath.endsWith(".js")) return HttpResponse.ok().js(file(resourcePath)).build();
-        if (resourcePath.endsWith(".ico")) return HttpResponse.ok().icon(file(resourcePath)).build();
-        throw new UnsupportedOperationException("지원되지 않는 확장자입니다. path=" + resourcePath);
-    }
-
-    // TODO : 이 로직이 Body에 가야하는건 아닐까?
-    // Body = Body.of(String resourcePath);
-    private byte[] file(String resourcePath) {
-        try (final var inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
-            if (inputStream == null) throw new IllegalStateException("존재하지 않는 정적 리소스입니다. path=" + resourcePath);
-            return inputStream.readAllBytes();
-        } catch (IOException e) {
-            throw new IllegalStateException("정적 리소스를 읽는 중 예외가 발생했습니다.", e);
-        }
+        return HttpResponse.ok().body(Body.resource(resourcePath));
     }
 }
