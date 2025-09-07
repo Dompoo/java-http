@@ -32,6 +32,7 @@ public record HttpRequest(
     }
 
     private static List<String> readUntilNewLine(BufferedReader reader) throws IOException {
+
         List<String> result = new ArrayList<>();
         String line;
         while ((line = reader.readLine()) != null) {
