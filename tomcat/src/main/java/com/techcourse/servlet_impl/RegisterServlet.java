@@ -1,5 +1,6 @@
 package com.techcourse.servlet_impl;
 
+import com.java.http.Header;
 import com.java.http.HttpRequest;
 import com.java.http.HttpResponse;
 import com.java.servlet.Servlet;
@@ -29,17 +30,17 @@ public class RegisterServlet implements Servlet {
         String email = form.get("email");
         String password = form.get("password");
         if (account == null || email == null | password == null) {
-            return HttpResponse.redirect("/401.html").build();
+            return HttpResponse.redirect("/401.html");
         }
 
         User user = new User(account, password, email);
         InMemoryUserRepository.save(user);
         log.info("회원가입 성공, user={}", user);
 
-        HttpResponse.HttpResponseBuilder response = HttpResponse.redirect("/index.html");
+        HttpResponse response = HttpResponse.redirect("/index.html");
         if (request.cookie("JSESSIONID") == null) {
-            response.setCookie("JSESSIONID", UUID.randomUUID().toString());
+            response.addHeader(Header.setCookie("JSESSIONID", UUID.randomUUID().toString()));
         }
-        return response.build();
+        return response;
     }
 }

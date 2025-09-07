@@ -22,7 +22,7 @@ public record HttpResponse(
 
     public static HttpResponse redirect(String location) {
         return new HttpResponse(StatusCode.REDIRECT)
-                .headers(Headers.EMPTY.setLocation(location));
+                .addHeader(Header.location(location));
     }
 
     public static HttpResponse notFound(String message) {
@@ -40,8 +40,8 @@ public record HttpResponse(
                 .body(Body.plaintext(stackTrace));
     }
 
-    public HttpResponse headers(Headers headers) {
-        return new HttpResponse(this.version, this.statusCode, headers, this.body);
+    public HttpResponse addHeader(Header header) {
+        return new HttpResponse(this.version, this.statusCode, headers.add(header), this.body);
     }
 
     public HttpResponse body(Body body) {
@@ -49,8 +49,8 @@ public record HttpResponse(
                 this.version,
                 this.statusCode,
                 this.headers
-                        .setContentLength(body.contentLength())
-                        .setContentType(body.contentType()),
+                        .add(Header.contentType(body.contentType()))
+                        .add(Header.contentLength(body.contentLength())),
                 body
         );
     }

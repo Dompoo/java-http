@@ -21,7 +21,7 @@ public record HttpRequest(
         Headers headers = Headers.from(startLineEndHeaders.subList(1, startLineEndHeaders.size() - 1));
 
         Body body = Body.EMPTY;
-        String contentLength = headers.value("Content-Length");
+        String contentLength = headers.valueOf("Content-Length");
         if (contentLength != null) {
             String bodyValue = readBy(reader, Integer.parseInt(contentLength));
             body = Body.plaintext(bodyValue);
