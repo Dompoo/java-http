@@ -8,7 +8,8 @@ import java.util.UUID;
 
 public class SimpleSession implements Session {
 
-    private final String id = UUID.randomUUID().toString();
+    private String id = createId();
+
     private final Map<String, Object> attributes = new HashMap<>();
 
     @Override
@@ -24,5 +25,14 @@ public class SimpleSession implements Session {
     @Override
     public void setAttribute(String name, Object value) {
         attributes.put(name, value);
+    }
+
+    @Override
+    public void changeSessionId() {
+        id = createId();
+    }
+
+    private static String createId() {
+        return UUID.randomUUID().toString();
     }
 }

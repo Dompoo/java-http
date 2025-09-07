@@ -37,8 +37,10 @@ public class RegisterServlet implements Servlet {
         InMemoryUserRepository.save(user);
         log.info("회원가입 성공, user={}", user);
 
-        Session session = request.session();
-        session.setAttribute("loginUser", user);
+        Session session = request.session(false);
+        if (session != null) session.changeSessionId();
+        else session = request.session(true);
+        session.setAttribute("user", user);
         return HttpResponse.redirect("/index.html")
                 .addHeader(Header.setCookie("JSESSIONID", session.id()));
     }

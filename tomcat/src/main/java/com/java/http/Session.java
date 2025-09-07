@@ -7,4 +7,6 @@ public interface Session {
     Object attributeOf(String name);
 
     void setAttribute(String name, Object value);
+
+    void changeSessionId();
 }

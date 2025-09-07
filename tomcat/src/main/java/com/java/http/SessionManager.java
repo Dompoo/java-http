@@ -1,6 +1,6 @@
-package org.apache.catalina.session;
+package com.java.http;
 
-import com.java.http.SessionStore;
+import org.apache.catalina.session.InMemorySessionStore;
 
 public class SessionManager {
 
