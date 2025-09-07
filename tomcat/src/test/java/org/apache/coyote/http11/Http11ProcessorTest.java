@@ -8,12 +8,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 class Http11ProcessorTest {
 
     @Test
-    void process() {
+    void process() throws IOException {
         // given
         final var socket = new StubSocket();
         final var processor = new Http11Processor(socket, new SimpleContainer());
@@ -22,11 +22,12 @@ class Http11ProcessorTest {
         processor.process(socket);
 
         // then
+        final var resource = getClass().getClassLoader().getResource("static/index.html");
         assertThat(socket.output()).contains(
                 "HTTP/1.1 200 OK\r\n",
                 "Content-Type: text/html;charset=utf-8\r\n",
-                "Content-Length: 12\r\n",
-                "Hello world!"
+                "Content-Length: 5564\r\n",
+                new String(Files.readAllBytes(new File(resource.getFile()).toPath()))
         );
     }
 
