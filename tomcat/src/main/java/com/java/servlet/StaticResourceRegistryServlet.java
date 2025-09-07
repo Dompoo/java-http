@@ -33,6 +33,8 @@ public class StaticResourceRegistryServlet implements Servlet {
         throw new UnsupportedOperationException("지원되지 않는 확장자입니다. path=" + resourcePath);
     }
 
+    // TODO : 이 로직이 Body에 가야하는건 아닐까?
+    // Body = Body.of(String resourcePath);
     private byte[] file(String resourcePath) {
         try (final var inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
             if (inputStream == null) throw new IllegalStateException("존재하지 않는 정적 리소스입니다. path=" + resourcePath);

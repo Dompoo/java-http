@@ -53,6 +53,7 @@ public record HttpRequest(
         return startLine.queryParameter().get(key);
     }
 
+    // TODO : 단순 delegate 하는 형태... 올바른가?
     public HttpMethod method() {
         return startLine.method();
     }

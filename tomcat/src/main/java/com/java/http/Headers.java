@@ -38,6 +38,7 @@ public record Headers(
         values.put("Set-Cookie", key + "=" + value);
     }
 
+    // TODO : 헤더는 대소문자 구분이 없단다...
     public String value(String key) {
         return values.get(key);
     }

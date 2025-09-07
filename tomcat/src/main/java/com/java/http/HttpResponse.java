@@ -7,6 +7,17 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+// TODO : HttpResponse를 어떻게 조립하는 것이 사용하는 입장에서 편할까?
+/*
+HttpResponse.ok(200)
+    .body(Body.of("/index.html"))
+    .headers(new Headers()
+        .contentType(APPLICATION_JSON)
+        // ...
+    ).build();
+
+문제 : Body값에 따라 ContentLength가 달라져야 하는데 객체가 분리되어 있어서 유동적으로 설정하기가 어려움
+ */
 public record HttpResponse(
         String version,
         StatusCode statusCode,
