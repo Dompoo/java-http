@@ -5,114 +5,57 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
-// TODO : HttpResponse를 어떻게 조립하는 것이 사용하는 입장에서 편할까?
-/*
-HttpResponse.ok(200)
-    .body(Body.of("/index.html"))
-    .headers(new Headers()
-        .contentType(APPLICATION_JSON)
-        // ...
-    ).build();
-
-문제 : Body값에 따라 ContentLength가 달라져야 하는데 객체가 분리되어 있어서 유동적으로 설정하기가 어려움
- */
 public record HttpResponse(
         String version,
         StatusCode statusCode,
         Headers headers,
         Body body
 ) {
-    public static HttpResponseBuilder ok() {
-        return new HttpResponseBuilder(200);
+    public HttpResponse(StatusCode statusCode) {
+        this("HTTP/1.1", statusCode, Headers.EMPTY, Body.EMPTY);
     }
 
-    public static HttpResponseBuilder redirect(String location) {
-        return new HttpResponseBuilder(302).location(location);
+    public static HttpResponse ok() {
+        return new HttpResponse(StatusCode.OK);
     }
 
-    public static HttpResponseBuilder notFound(String message) {
-        return new HttpResponseBuilder(404).plain(message);
+    public static HttpResponse redirect(String location) {
+        return new HttpResponse(StatusCode.REDIRECT)
+                .headers(Headers.EMPTY.setLocation(location));
     }
 
-    public static HttpResponseBuilder internalServerError(Exception exception) {
+    public static HttpResponse notFound(String message) {
+        return new HttpResponse(StatusCode.NOT_FOUND)
+                .body(Body.plaintext(message));
+    }
+
+    public static HttpResponse internalServerError(Exception exception) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
         exception.printStackTrace(printWriter);
         String stackTrace = stringWriter.toString();
-        return new HttpResponseBuilder(500).plain(stackTrace);
+
+        return new HttpResponse(StatusCode.INTERNAL_SERVER_ERROR)
+                .body(Body.plaintext(stackTrace));
     }
 
-    public static class HttpResponseBuilder {
-
-        private final String version = "HTTP/1.1";
-        private final StatusCode statusCode;
-        private final Headers headers = new Headers();
-        private Body responseBody = Body.EMPTY;
-
-        public HttpResponseBuilder(int statusCode) {
-            this.statusCode = StatusCode.parse(statusCode);
-        }
-
-        public HttpResponseBuilder plain(String data) {
-            this.headers.contentType("text/plain;charset=utf-8");
-            this.headers.contentLength(data.getBytes(StandardCharsets.UTF_8).length);
-            this.responseBody = new Body(data);
-            return this;
-        }
-
-        public HttpResponseBuilder html(String data) {
-            this.headers.contentType("text/html;charset=utf-8");
-            this.headers.contentLength(data.getBytes(StandardCharsets.UTF_8).length);
-            this.responseBody = new Body(data);
-            return this;
-        }
-
-        public HttpResponseBuilder html(byte[] data) {
-            this.headers.contentType("text/html;charset=utf-8");
-            this.headers.contentLength(data.length);
-            this.responseBody = new Body(data);
-            return this;
-        }
-
-        public HttpResponseBuilder css(byte[] data) {
-            this.headers.contentType("text/css;charset=utf-8");
-            this.headers.contentLength(data.length);
-            this.responseBody = new Body(data);
-            return this;
-        }
-
-        public HttpResponseBuilder js(byte[] data) {
-            this.headers.contentType("application/javascript;charset=utf-8");
-            this.headers.contentLength(data.length);
-            this.responseBody = new Body(data);
-            return this;
-        }
-
-        public HttpResponseBuilder icon(byte[] data) {
-            this.headers.contentType("image/x-icon");
-            this.headers.contentLength(data.length);
-            this.responseBody = new Body(data);
-            return this;
-        }
-
-        public HttpResponseBuilder location(String location) {
-            this.headers.location(location);
-            return this;
-        }
-
-        public HttpResponseBuilder setCookie(String key, String value) {
-            this.headers.setCookie(key, value);
-            return this;
-        }
-
-        public HttpResponse build() {
-            return new HttpResponse(version, statusCode, headers, responseBody);
-        }
+    public HttpResponse headers(Headers headers) {
+        return new HttpResponse(this.version, this.statusCode, headers, this.body);
     }
 
-    private enum StatusCode {
+    public HttpResponse body(Body body) {
+        return new HttpResponse(
+                this.version,
+                this.statusCode,
+                this.headers
+                        .setContentLength(body.contentLength())
+                        .setContentType(body.contentType()),
+                body
+        );
+    }
+
+    public enum StatusCode {
         OK("OK", 200),
         REDIRECT("Found", 302),
         NOT_FOUND("Not Found", 404),
@@ -126,21 +69,14 @@ public record HttpResponse(
             this.codeName = codeName;
             this.codeNumber = codeNumber;
         }
-
-        public static StatusCode parse(int codeNumber) {
-            return Arrays.stream(StatusCode.values())
-                    .filter(value -> value.codeNumber == codeNumber)
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상태코드입니다. input=" + codeNumber));
-        }
     }
 
     public byte[] toByteArray() {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             baos.write("%s %s %s\r\n".formatted(version, statusCode.codeNumber, statusCode.codeName).getBytes(StandardCharsets.UTF_8));
-            baos.write(headers.toSimpleString().getBytes(StandardCharsets.UTF_8));
+            baos.write(headers.toByteArray());
             baos.write("\r\n".getBytes(StandardCharsets.UTF_8));
-            baos.write(body.value());
+            baos.write(body.toByteArray());
             return baos.toByteArray();
         } catch (IOException e) {
             throw new IllegalStateException("HTTP 응답을 구성하는 중에 예외가 발생했습니다.", e);

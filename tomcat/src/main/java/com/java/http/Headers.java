@@ -1,15 +1,14 @@
 package com.java.http;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public record Headers(
         Map<String, String> values
 ) {
-    public Headers() {
-        this(new HashMap<>());
-    }
-
+    public static final Headers EMPTY = new Headers(Collections.emptyMap());
+    
     public static Headers from(List<String> headers) {
         Map<String, String> values = headers.stream()
                 .map(line -> {
@@ -22,20 +21,28 @@ public record Headers(
         return new Headers(values);
     }
 
-    public void contentType(String value) {
-        values.put("Content-Type", value);
+    public Headers setContentType(ContentType contentType) {
+        Map<String, String> newMap = new HashMap<>(values);
+        newMap.put("Content-Type", contentType.value);
+        return new Headers(newMap);
     }
 
-    public void contentLength(int value) {
-        values.put("Content-Length", String.valueOf(value));
+    public Headers setContentLength(int value) {
+        Map<String, String> newMap = new HashMap<>(values);
+        newMap.put("Content-Length", String.valueOf(value));
+        return new Headers(newMap);
     }
 
-    public void location(String value) {
-        values.put("Location", value);
+    public Headers setLocation(String value) {
+        Map<String, String> newMap = new HashMap<>(values);
+        newMap.put("Location", value);
+        return new Headers(newMap);
     }
 
-    public void setCookie(String key, String value) {
-        values.put("Set-Cookie", key + "=" + value);
+    public Headers addCookie(String key, String value) {
+        Map<String, String> newMap = new HashMap<>(values);
+        newMap.put("Set-Cookie", key + "=" + value);
+        return new Headers(newMap);
     }
 
     // TODO : 헤더는 대소문자 구분이 없단다...
@@ -60,5 +67,9 @@ public record Headers(
         StringBuilder sb = new StringBuilder();
         values.forEach((key, value) -> sb.append("%s: %s".formatted(key, value)).append("\r\n"));
         return sb.toString();
+    }
+
+    public byte[] toByteArray() {
+        return toSimpleString().getBytes(StandardCharsets.UTF_8);
     }
 }

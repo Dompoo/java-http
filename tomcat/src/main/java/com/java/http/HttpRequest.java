@@ -24,7 +24,7 @@ public record HttpRequest(
         String contentLength = headers.value("Content-Length");
         if (contentLength != null) {
             String bodyValue = readBy(reader, Integer.parseInt(contentLength));
-            body = new Body(bodyValue);
+            body = Body.plaintext(bodyValue);
         }
 
         return new HttpRequest(startLine, headers, body);
