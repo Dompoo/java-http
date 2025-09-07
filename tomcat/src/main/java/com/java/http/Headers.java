@@ -5,26 +5,26 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public record Headers(
-        Set<Header> values
+        List<Header> values
 ) {
-    public static final Headers EMPTY = new Headers(Collections.emptySet());
+    public static final Headers EMPTY = new Headers(Collections.emptyList());
 
     public static Headers from(List<String> headers) {
-        Set<Header> headerSet = headers.stream()
+        List<Header> list = headers.stream()
                 .map(line -> {
                     int i = line.indexOf(":");
                     String key = line.substring(0, i).trim();
                     String value = line.substring(i + 1).trim();
                     return new Header(key, value);
                 })
-                .collect(Collectors.toSet());
-        return new Headers(headerSet);
+                .toList();
+        return new Headers(list);
     }
 
     public Headers add(Header header) {
-        Set<Header> newSet = new HashSet<>(values);
-        newSet.add(header);
-        return new Headers(newSet);
+        List<Header> list = new ArrayList<>(values);
+        list.add(header);
+        return new Headers(list);
     }
 
     public String valueOf(String key) {
