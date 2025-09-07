@@ -13,7 +13,7 @@ public final class HttpRequest {
     private final StartLine startLine;
     private final Headers headers;
     private final Body body;
-    private Session session = null;
+    private Session session;
 
     private HttpRequest(StartLine startLine, Headers headers, Body body) {
         this.startLine = startLine;
@@ -77,6 +77,10 @@ public final class HttpRequest {
 
     public Body body() {
         return body;
+    }
+
+    public Session session() {
+        return session;
     }
 
     public void setSession(Session session) {

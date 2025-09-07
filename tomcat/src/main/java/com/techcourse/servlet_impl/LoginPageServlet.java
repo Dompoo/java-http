@@ -3,6 +3,7 @@ package com.techcourse.servlet_impl;
 import com.java.http.Body;
 import com.java.http.HttpRequest;
 import com.java.http.HttpResponse;
+import com.java.http.Session;
 import com.java.servlet.Servlet;
 
 import static com.java.http.HttpRequest.HttpMethod.GET;
@@ -16,7 +17,9 @@ public class LoginPageServlet implements Servlet {
 
     @Override
     public HttpResponse handle(HttpRequest request) {
-        if (request.cookie("JSESSIONID") != null) {
+        Session session = request.session();
+        Object loginUser = session.attributeOf("loginUser");
+        if (loginUser != null) {
             return HttpResponse.redirect("/index.html");
         }
 
