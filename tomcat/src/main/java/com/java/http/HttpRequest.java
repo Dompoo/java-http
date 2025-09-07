@@ -8,11 +8,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public record HttpRequest(
-        StartLine startLine,
-        Headers headers,
-        Body body
-) {
+public final class HttpRequest {
+
+    private final StartLine startLine;
+    private final Headers headers;
+    private final Body body;
+    private Session session = null;
+
+    private HttpRequest(StartLine startLine, Headers headers, Body body) {
+        this.startLine = startLine;
+        this.headers = headers;
+        this.body = body;
+    }
+
     public static HttpRequest from(InputStream inputStream) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
@@ -49,11 +57,8 @@ public record HttpRequest(
         return new String(bodyChars, 0, read);
     }
 
-    public String param(String key) {
-        return startLine.queryParameter().get(key);
-    }
-
     // TODO : 단순 delegate 하는 형태... 올바른가?
+
     public HttpMethod method() {
         return startLine.method();
     }
@@ -62,8 +67,20 @@ public record HttpRequest(
         return startLine.uri();
     }
 
+    public String param(String key) {
+        return startLine.queryParameter().get(key);
+    }
+
     public String cookie(String key) {
         return headers.cookies().get(key);
+    }
+
+    public Body body() {
+        return body;
+    }
+
+    public void setSession(Session session) {
+        this.session = session;
     }
 
     private record StartLine(
