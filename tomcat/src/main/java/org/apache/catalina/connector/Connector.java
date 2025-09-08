@@ -1,6 +1,6 @@
 package org.apache.catalina.connector;
 
-import com.java.http.SessionManager;
+import com.java.http.session.SessionManager;
 import org.apache.catalina.container.Container;
 import org.apache.catalina.container.SimpleContainer;
 import org.apache.catalina.session.InMemorySessionStore;

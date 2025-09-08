@@ -1,12 +1,12 @@
 package com.techcourse.servlet_impl;
 
-import com.java.http.Body;
-import com.java.http.HttpRequest;
-import com.java.http.HttpResponse;
-import com.java.http.Session;
+import com.java.http.request_response.Body;
+import com.java.http.request_response.HttpRequest;
+import com.java.http.request_response.HttpResponse;
+import com.java.http.session.Session;
 import com.java.servlet.Servlet;
 
-import static com.java.http.HttpRequest.HttpMethod.GET;
+import static com.java.http.request_response.HttpRequest.HttpMethod.GET;
 
 public class LoginPageServlet implements Servlet {
 

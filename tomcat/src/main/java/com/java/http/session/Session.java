@@ -1,4 +1,4 @@
-package com.java.http;
+package com.java.http.session;
 
 public interface Session {
 

@@ -1,6 +1,6 @@
 package org.apache.catalina.session;
 
-import com.java.http.Session;
+import com.java.http.session.Session;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,7 @@
 package org.apache.catalina.container;
 
-import com.java.http.HttpRequest;
-import com.java.http.HttpResponse;
+import com.java.http.request_response.HttpRequest;
+import com.java.http.request_response.HttpResponse;
 import com.java.servlet.Servlet;
 import com.java.servlet.StaticResourceRegistryServlet;
 import com.techcourse.servlet_impl.LoginPageServlet;

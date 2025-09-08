@@ -1,4 +1,8 @@
-package com.java.http;
+package com.java.http.request_response;
+
+import com.java.http.session.Session;
+import com.java.http.session.SessionManager;
+import com.java.http.session.SessionStore;
 
 import java.io.BufferedReader;
 import java.io.IOException;

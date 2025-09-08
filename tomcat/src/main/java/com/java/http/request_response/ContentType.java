@@ -1,4 +1,4 @@
-package com.java.http;
+package com.java.http.request_response;
 
 public enum ContentType {
     PLAIN("text/plain;charset=utf-8"),

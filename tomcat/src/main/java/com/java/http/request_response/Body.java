@@ -1,4 +1,4 @@
-package com.java.http;
+package com.java.http.request_response;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

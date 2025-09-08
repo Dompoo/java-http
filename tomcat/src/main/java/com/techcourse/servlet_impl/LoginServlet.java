@@ -1,9 +1,9 @@
 package com.techcourse.servlet_impl;
 
-import com.java.http.Header;
-import com.java.http.HttpRequest;
-import com.java.http.HttpResponse;
-import com.java.http.Session;
+import com.java.http.request_response.Header;
+import com.java.http.request_response.HttpRequest;
+import com.java.http.request_response.HttpResponse;
+import com.java.http.session.Session;
 import com.java.servlet.Servlet;
 import com.techcourse.db.InMemoryUserRepository;
 import com.techcourse.model.User;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.java.http.HttpRequest.HttpMethod.POST;
+import static com.java.http.request_response.HttpRequest.HttpMethod.POST;
 
 public class LoginServlet implements Servlet {
 
