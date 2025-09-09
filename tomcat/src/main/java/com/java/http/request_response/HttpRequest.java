@@ -91,22 +91,21 @@ public record HttpRequest(
             String uri,
             Map<String, String> queryParameter
     ) {
-        // TODO : 불완전한 쿼리파라미터 형식을 고려하여 엣지케이스 처리
         public static StartLine from(String startLine) {
-            String[] requestLine = startLine.split(" ");
+            String[] methodAndUri = startLine.split(" ");
 
-            if (!requestLine[1].contains("?")) {
-                String method = requestLine[0];
-                String uri = requestLine[1];
+            String method = methodAndUri[0];
+            if (!methodAndUri[1].contains("?")) {
+                String uri = methodAndUri[1];
                 return new StartLine(HttpMethod.parse(method), uri, Collections.emptyMap());
             } else {
-                String method = requestLine[0];
-                String[] uriAndParams = requestLine[1].split("\\?");
+                String[] uriAndParams = methodAndUri[1].split("\\?");
                 String uri = uriAndParams[0];
                 String params = uriAndParams[1];
 
                 Map<String, String> paramMap = Arrays.stream(params.split("&"))
                         .map(param -> param.split("="))
+                        .filter(param -> param.length == 2)
                         .collect(Collectors.toMap(param -> param[0], param -> param[1]));
                 return new StartLine(HttpMethod.parse(method), uri, Collections.unmodifiableMap(paramMap));
             }
