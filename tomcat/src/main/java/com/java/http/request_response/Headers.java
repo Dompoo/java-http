@@ -28,7 +28,7 @@ public record Headers(
     }
 
     public String valueOf(String key) {
-        return values.stream().filter(header -> header.key().equals(key))
+        return values.stream().filter(header -> header.equalsIgnoreCase(key))
                 .map(Header::value)
                 .findFirst()
                 .orElse(null);
