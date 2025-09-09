@@ -23,8 +23,11 @@ public record HttpRequest(
 
         List<String> startLineAndHeaders = readUntilNewLine(reader);
         StartLine startLine = StartLine.from(startLineAndHeaders.getFirst());
-        // TODO : 헤더가 없는 경우 처리
-        Headers headers = Headers.from(startLineAndHeaders.subList(1, startLineAndHeaders.size() - 1));
+
+        Headers headers = Headers.EMPTY;
+        if (startLineAndHeaders.size() >= 2) {
+            headers = Headers.from(startLineAndHeaders.subList(1, startLineAndHeaders.size() - 1));
+        }
 
         Body body = Body.EMPTY;
         String contentLength = headers.valueOf("Content-Length");
