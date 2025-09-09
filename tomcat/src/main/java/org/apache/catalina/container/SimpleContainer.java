@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.java.http.request_response.HttpResponse.StatusCode.INTERNAL_SERVER_ERROR;
-import static com.java.http.request_response.HttpResponse.StatusCode.NOT_FOUND;
+import static com.java.http.request_response.StatusCode.INTERNAL_SERVER_ERROR;
+import static com.java.http.request_response.StatusCode.NOT_FOUND;
 
 public class SimpleContainer implements Container {
 

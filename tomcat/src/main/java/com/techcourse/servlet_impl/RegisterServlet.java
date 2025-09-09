@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-import static com.java.http.request_response.HttpRequest.HttpMethod.POST;
+import static com.java.http.request_response.HttpMethod.POST;
 
 public class RegisterServlet implements Servlet {
 

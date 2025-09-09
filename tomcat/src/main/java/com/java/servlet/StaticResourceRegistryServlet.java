@@ -7,8 +7,8 @@ import com.java.http.request_response.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.java.http.request_response.HttpRequest.HttpMethod.GET;
-import static com.java.http.request_response.HttpResponse.StatusCode.OK;
+import static com.java.http.request_response.HttpMethod.GET;
+import static com.java.http.request_response.StatusCode.OK;
 
 public class StaticResourceRegistryServlet implements Servlet {
 
