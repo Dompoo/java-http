@@ -26,6 +26,7 @@ public class SimpleContainer implements Container {
                 .register("/index.html", "static/index.html")
                 .register("/register", "static/register.html")
                 .register("/401.html", "static/401.html")
+                .register("/400.html", "static/400.html")
                 .register("/css/styles.css", "static/css/styles.css")
                 .register("/js/scripts.js", "static/js/scripts.js")
                 .register("/assets/chart-area.js", "static/assets/chart-area.js")
