@@ -27,7 +27,7 @@ public record HttpRequest(
         List<String> startLineAndHeaders = readUntilNewLine(reader);
 
         String[] methodAndUri = startLineAndHeaders.getFirst().split(" ");
-        HttpMethod httpMethod = HttpMethod.valueOf(methodAndUri[0]);
+        HttpMethod httpMethod = HttpMethod.parse(methodAndUri[0]);
         String uri;
         Map<String, String> paramMap;
         if (!methodAndUri[1].contains("?")) {

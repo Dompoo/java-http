@@ -37,11 +37,11 @@ public record Body(
         return plaintext(stackTrace);
     }
 
-    // TODO : 엣지케이스 처리
     public Map<String, String> asFormUrlEncoded() {
         String body = new String(value, StandardCharsets.UTF_8);
         return Arrays.stream(body.split("&"))
                 .map(data -> data.split("="))
+                .filter(arr -> arr.length == 2)
                 .collect(Collectors.toMap(data -> data[0], data -> data[1]));
     }
 
