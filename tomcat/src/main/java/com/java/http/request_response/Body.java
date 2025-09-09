@@ -27,6 +27,7 @@ public record Body(
         return new Body(value, ContentType.from(resourcePath));
     }
 
+    // TODO : 엣지케이스 처리
     public Map<String, String> asFormUrlEncoded() {
         String body = new String(value, StandardCharsets.UTF_8);
         return Arrays.stream(body.split("&"))

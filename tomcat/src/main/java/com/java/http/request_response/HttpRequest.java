@@ -90,6 +90,7 @@ public record HttpRequest(
             String uri,
             Map<String, String> queryParameter
     ) {
+        // TODO : 불완전한 쿼리파라미터 형식을 고려하여 엣지케이스 처리
         public static StartLine from(String startLine) {
             String[] requestLine = startLine.split(" ");
 
