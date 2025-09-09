@@ -15,7 +15,7 @@ public record HttpResponse(
     }
 
     public static HttpResponse redirect(String location) {
-        return HttpResponse.of(StatusCode.REDIRECT)
+        return HttpResponse.of(StatusCode.FOUND)
                 .addHeader(Header.location(location));
     }
 
@@ -36,7 +36,7 @@ public record HttpResponse(
 
     public enum StatusCode {
         OK("OK", 200),
-        REDIRECT("Found", 302),
+        FOUND("Found", 302),
         NOT_FOUND("Not Found", 404),
         INTERNAL_SERVER_ERROR("Internal Server Error", 500),
         ;
