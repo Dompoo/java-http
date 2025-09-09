@@ -30,7 +30,7 @@ public class RegisterServlet implements Servlet {
         String email = form.get("email");
         String password = form.get("password");
         if (account == null || email == null || password == null) {
-            return HttpResponse.redirect("/401.html");
+            return HttpResponse.redirect("/400.html");
         }
 
         User user = new User(account, password, email);
