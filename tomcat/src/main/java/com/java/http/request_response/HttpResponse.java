@@ -12,21 +12,21 @@ public record HttpResponse(
         Headers headers,
         Body body
 ) {
-    public HttpResponse(StatusCode statusCode) {
-        this("HTTP/1.1", statusCode, Headers.EMPTY, Body.EMPTY);
+    public static HttpResponse of(StatusCode statusCode) {
+        return new HttpResponse("HTTP/1.1", statusCode, Headers.EMPTY, Body.EMPTY);
     }
 
     public static HttpResponse ok() {
-        return new HttpResponse(StatusCode.OK);
+        return HttpResponse.of(StatusCode.OK);
     }
 
     public static HttpResponse redirect(String location) {
-        return new HttpResponse(StatusCode.REDIRECT)
+        return HttpResponse.of(StatusCode.REDIRECT)
                 .addHeader(Header.location(location));
     }
 
     public static HttpResponse notFound(String message) {
-        return new HttpResponse(StatusCode.NOT_FOUND)
+        return HttpResponse.of(StatusCode.NOT_FOUND)
                 .body(Body.plaintext(message));
     }
 
@@ -36,7 +36,7 @@ public record HttpResponse(
         exception.printStackTrace(printWriter);
         String stackTrace = stringWriter.toString();
 
-        return new HttpResponse(StatusCode.INTERNAL_SERVER_ERROR)
+        return HttpResponse.of(StatusCode.INTERNAL_SERVER_ERROR)
                 .body(Body.plaintext(stackTrace));
     }
 
