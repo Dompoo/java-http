@@ -1,7 +1,7 @@
 package com.java.servlet;
 
-import com.java.http.HttpRequest;
-import com.java.http.HttpResponse;
+import com.java.http.request_response.HttpRequest;
+import com.java.http.request_response.HttpResponse;
 
 public interface Servlet {
 
