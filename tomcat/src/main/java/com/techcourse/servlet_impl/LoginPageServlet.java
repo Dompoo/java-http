@@ -18,11 +18,7 @@ public class LoginPageServlet implements Servlet {
     @Override
     public HttpResponse handle(HttpRequest request) {
         Session session = request.session(false);
-        if (session == null) {
-            session = request.session(true);
-        }
-        Object user = session.attributeOf("user");
-        if (user != null) {
+        if (session != null && session.attributeOf("user") != null) {
             return HttpResponse.redirect("/index.html");
         }
 
