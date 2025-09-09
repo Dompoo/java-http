@@ -7,6 +7,7 @@ import com.java.http.session.Session;
 import com.java.servlet.Servlet;
 
 import static com.java.http.request_response.HttpRequest.HttpMethod.GET;
+import static com.java.http.request_response.HttpResponse.StatusCode.OK;
 
 public class LoginPageServlet implements Servlet {
 
@@ -22,6 +23,6 @@ public class LoginPageServlet implements Servlet {
             return HttpResponse.redirect("/index.html");
         }
 
-        return HttpResponse.ok().body(Body.resource("static/login.html"));
+        return HttpResponse.of(OK).body(Body.resource("static/login.html"));
     }
 }

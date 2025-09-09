@@ -1,5 +1,6 @@
 package org.apache.catalina.container;
 
+import com.java.http.request_response.Body;
 import com.java.http.request_response.HttpRequest;
 import com.java.http.request_response.HttpResponse;
 import com.java.servlet.Servlet;
@@ -11,6 +12,9 @@ import com.techcourse.servlet_impl.RegisterServlet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.java.http.request_response.HttpResponse.StatusCode.INTERNAL_SERVER_ERROR;
+import static com.java.http.request_response.HttpResponse.StatusCode.NOT_FOUND;
 
 public class SimpleContainer implements Container {
 
@@ -41,13 +45,15 @@ public class SimpleContainer implements Container {
         Optional<Servlet> servlet = findServletFor(request);
 
         if (servlet.isEmpty()) {
-            return HttpResponse.notFound("해당 요청을 처리할 서블릿을 찾지 못했습니다. uri=" + request.uri());
+            return HttpResponse.of(NOT_FOUND)
+                    .body(Body.plaintext("해당 요청을 처리할 서블릿을 찾지 못했습니다. uri=" + request.uri()));
         }
 
         try {
             return servlet.get().handle(request);
         } catch (Exception e) {
-            return HttpResponse.internalServerError(e);
+            return HttpResponse.of(INTERNAL_SERVER_ERROR)
+                    .body(Body.stackTrace(e));
         }
     }
 

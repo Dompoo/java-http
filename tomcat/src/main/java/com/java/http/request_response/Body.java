@@ -1,6 +1,8 @@
 package com.java.http.request_response;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
@@ -25,6 +27,14 @@ public record Body(
             throw new IllegalStateException("정적 리소스를 읽는 중 예외가 발생했습니다.", e);
         }
         return new Body(value, ContentType.from(resourcePath));
+    }
+
+    public static Body stackTrace(Throwable t) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        t.printStackTrace(printWriter);
+        String stackTrace = stringWriter.toString();
+        return plaintext(stackTrace);
     }
 
     // TODO : 엣지케이스 처리

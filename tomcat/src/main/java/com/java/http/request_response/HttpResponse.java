@@ -2,8 +2,6 @@ package com.java.http.request_response;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 
 public record HttpResponse(
@@ -16,28 +14,9 @@ public record HttpResponse(
         return new HttpResponse("HTTP/1.1", statusCode, Headers.EMPTY, Body.EMPTY);
     }
 
-    public static HttpResponse ok() {
-        return HttpResponse.of(StatusCode.OK);
-    }
-
     public static HttpResponse redirect(String location) {
         return HttpResponse.of(StatusCode.REDIRECT)
                 .addHeader(Header.location(location));
-    }
-
-    public static HttpResponse notFound(String message) {
-        return HttpResponse.of(StatusCode.NOT_FOUND)
-                .body(Body.plaintext(message));
-    }
-
-    public static HttpResponse internalServerError(Exception exception) {
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        exception.printStackTrace(printWriter);
-        String stackTrace = stringWriter.toString();
-
-        return HttpResponse.of(StatusCode.INTERNAL_SERVER_ERROR)
-                .body(Body.plaintext(stackTrace));
     }
 
     public HttpResponse addHeader(Header header) {
