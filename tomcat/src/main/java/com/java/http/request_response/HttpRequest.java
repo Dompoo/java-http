@@ -21,9 +21,10 @@ public record HttpRequest(
     public static HttpRequest from(InputStream inputStream) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
-        List<String> startLineEndHeaders = readUntilNewLine(reader);
-        StartLine startLine = StartLine.from(startLineEndHeaders.getFirst());
-        Headers headers = Headers.from(startLineEndHeaders.subList(1, startLineEndHeaders.size() - 1));
+        List<String> startLineAndHeaders = readUntilNewLine(reader);
+        StartLine startLine = StartLine.from(startLineAndHeaders.getFirst());
+        // TODO : 헤더가 없는 경우 처리
+        Headers headers = Headers.from(startLineAndHeaders.subList(1, startLineAndHeaders.size() - 1));
 
         Body body = Body.EMPTY;
         String contentLength = headers.valueOf("Content-Length");
