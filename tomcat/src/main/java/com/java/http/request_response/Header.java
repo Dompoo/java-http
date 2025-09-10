@@ -20,7 +20,7 @@ public record Header(
         return new Header("Set-Cookie", key + "=" + value);
     }
 
-    public boolean equalsIgnoreCase(String value) {
-        return this.value.equalsIgnoreCase(value);
+    public boolean sameKeyWith(String key) {
+        return this.key.equalsIgnoreCase(key);
     }
 }
