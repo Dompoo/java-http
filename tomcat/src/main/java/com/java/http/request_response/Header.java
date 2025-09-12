@@ -19,4 +19,8 @@ public record Header(
     public static Header setCookie(String key, String value) {
         return new Header("Set-Cookie", key + "=" + value);
     }
+
+    public boolean sameKeyWith(String key) {
+        return this.key.equalsIgnoreCase(key);
+    }
 }

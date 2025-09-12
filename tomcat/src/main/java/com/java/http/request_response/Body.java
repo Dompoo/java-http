@@ -1,6 +1,8 @@
 package com.java.http.request_response;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
@@ -27,11 +29,19 @@ public record Body(
         return new Body(value, ContentType.from(resourcePath));
     }
 
-    // TODO : 엣지케이스 처리
+    public static Body stackTrace(Throwable t) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        t.printStackTrace(printWriter);
+        String stackTrace = stringWriter.toString();
+        return plaintext(stackTrace);
+    }
+
     public Map<String, String> asFormUrlEncoded() {
         String body = new String(value, StandardCharsets.UTF_8);
         return Arrays.stream(body.split("&"))
                 .map(data -> data.split("="))
+                .filter(arr -> arr.length == 2)
                 .collect(Collectors.toMap(data -> data[0], data -> data[1]));
     }
 

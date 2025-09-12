@@ -12,19 +12,40 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.java.http.request_response.Headers.EMPTY;
+
 public record HttpRequest(
-        StartLine startLine,
+        HttpMethod method,
+        String uri,
+        Map<String, String> paramMap,
         Headers headers,
         Body body
 ) {
 
     public static HttpRequest from(InputStream inputStream) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-
         List<String> startLineAndHeaders = readUntilNewLine(reader);
-        StartLine startLine = StartLine.from(startLineAndHeaders.getFirst());
-        // TODO : 헤더가 없는 경우 처리
-        Headers headers = Headers.from(startLineAndHeaders.subList(1, startLineAndHeaders.size() - 1));
+
+        String[] methodAndUri = startLineAndHeaders.getFirst().split(" ");
+        HttpMethod httpMethod = HttpMethod.parse(methodAndUri[0]);
+        String uri;
+        Map<String, String> paramMap;
+        if (!methodAndUri[1].contains("?")) {
+            uri = methodAndUri[1];
+            paramMap = Collections.emptyMap();
+        } else {
+            String[] uriAndParams = methodAndUri[1].split("\\?");
+            uri = uriAndParams[0];
+            paramMap = Arrays.stream(uriAndParams[1].split("&"))
+                    .map(param -> param.split("="))
+                    .filter(param -> param.length == 2)
+                    .collect(Collectors.toMap(param -> param[0], param -> param[1]));
+        }
+
+        Headers headers = EMPTY;
+        if (startLineAndHeaders.size() >= 2) {
+            headers = Headers.from(startLineAndHeaders.subList(1, startLineAndHeaders.size() - 1));
+        }
 
         Body body = Body.EMPTY;
         String contentLength = headers.valueOf("Content-Length");
@@ -33,7 +54,7 @@ public record HttpRequest(
             body = Body.plaintext(bodyValue);
         }
 
-        return new HttpRequest(startLine, headers, body);
+        return new HttpRequest(httpMethod, uri, paramMap, headers, body);
     }
 
     private static List<String> readUntilNewLine(BufferedReader reader) throws IOException {
@@ -55,16 +76,8 @@ public record HttpRequest(
         return new String(bodyChars, 0, read);
     }
 
-    public HttpMethod method() {
-        return startLine.method();
-    }
-
-    public String uri() {
-        return startLine.uri();
-    }
-
     public String param(String key) {
-        return startLine.queryParameter().get(key);
+        return paramMap.get(key);
     }
 
     public String cookie(String key) {
@@ -84,49 +97,5 @@ public record HttpRequest(
         SessionStore sessionStore = SessionManager.getSessionStore();
         Session session = session(false);
         sessionStore.changeSessionId(session);
-    }
-
-    private record StartLine(
-            HttpMethod method,
-            String uri,
-            Map<String, String> queryParameter
-    ) {
-        // TODO : 불완전한 쿼리파라미터 형식을 고려하여 엣지케이스 처리
-        public static StartLine from(String startLine) {
-            String[] requestLine = startLine.split(" ");
-
-            if (!requestLine[1].contains("?")) {
-                String method = requestLine[0];
-                String uri = requestLine[1];
-                return new StartLine(HttpMethod.parse(method), uri, Collections.emptyMap());
-            } else {
-                String method = requestLine[0];
-                String[] uriAndParams = requestLine[1].split("\\?");
-                String uri = uriAndParams[0];
-                String params = uriAndParams[1];
-
-                Map<String, String> paramMap = Arrays.stream(params.split("&"))
-                        .map(param -> param.split("="))
-                        .collect(Collectors.toMap(param -> param[0], param -> param[1]));
-                return new StartLine(HttpMethod.parse(method), uri, Collections.unmodifiableMap(paramMap));
-            }
-        }
-    }
-
-    public enum HttpMethod {
-        GET,
-        POST,
-        PUT,
-        PATCH,
-        DELETE,
-        OPTIONS,
-        ;
-
-        public static HttpMethod parse(String str) {
-            return Arrays.stream(HttpMethod.values())
-                    .filter(value -> value.name().equalsIgnoreCase(str))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 HTTP 메서드입니다. input=" + str));
-        }
     }
 }

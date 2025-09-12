@@ -5,9 +5,12 @@ import com.java.http.request_response.HttpRequest;
 import com.java.http.request_response.HttpResponse;
 import com.java.http.session.Session;
 import com.java.servlet.Servlet;
+import org.apache.catalina.container.TomcatServlet;
 
-import static com.java.http.request_response.HttpRequest.HttpMethod.GET;
+import static com.java.http.request_response.HttpMethod.GET;
+import static com.java.http.request_response.StatusCode.OK;
 
+@TomcatServlet
 public class LoginPageServlet implements Servlet {
 
     @Override
@@ -22,6 +25,6 @@ public class LoginPageServlet implements Servlet {
             return HttpResponse.redirect("/index.html");
         }
 
-        return HttpResponse.ok().body(Body.resource("static/login.html"));
+        return HttpResponse.of(OK).body(Body.resource("static/login.html"));
     }
 }

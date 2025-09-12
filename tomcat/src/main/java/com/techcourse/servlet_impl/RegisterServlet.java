@@ -7,13 +7,15 @@ import com.java.http.session.Session;
 import com.java.servlet.Servlet;
 import com.techcourse.db.InMemoryUserRepository;
 import com.techcourse.model.User;
+import org.apache.catalina.container.TomcatServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-import static com.java.http.request_response.HttpRequest.HttpMethod.POST;
+import static com.java.http.request_response.HttpMethod.POST;
 
+@TomcatServlet
 public class RegisterServlet implements Servlet {
 
     private static final Logger log = LoggerFactory.getLogger(RegisterServlet.class);
