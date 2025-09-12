@@ -1,19 +1,18 @@
 package org.apache.catalina.connector;
 
 import com.java.http.session.SessionManager;
-import org.apache.catalina.container.Container;
-import org.apache.catalina.container.SimpleContainer;
-import org.apache.catalina.session.InMemorySessionStore;
-import org.apache.coyote.http11.Http11Processor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.apache.catalina.container.Container;
+import org.apache.catalina.container.SimpleContainer;
+import org.apache.catalina.session.InMemorySessionStore;
+import org.apache.coyote.http11.Http11Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Connector implements Runnable {
 
@@ -76,7 +75,7 @@ public class Connector implements Runnable {
     }
 
     private void process(final Socket connection) {
-        if (connection==null) {
+        if (connection == null) {
             return;
         }
         var processor = new Http11Processor(connection, container);
